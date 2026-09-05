@@ -1,17 +1,27 @@
-# tugas2 PAM - LogiTrack
+# LogiTrack - Warehouse & Logistics Utility App
+Tugas 2 Pemrograman Aplikasi Mobile (PAM)
 
-A new Flutter project.
+LogiTrack adalah aplikasi utilitas mobilitas bagi staf dan supervisor gudang untuk mempermudah operasional harian di lapangan (kalkulasi muatan, sortir rak ganjil/genap, dan verifikasi digit resi/barcode).
 
-## Getting Started
+## Fitur Utama
+1. **Login Staf Gudang** - Autentikasi lokal staf gudang.
+2. **Profil Tim** - Informasi anggota kelompok pengembang.
+3. **Kalkulator Logistik** - Operasi hitung stok & muatan (+, -, ×, ÷) dengan penanganan error pembagian nol.
+4. **Sortir Zonasi Rak** - Alokasi rak berdasarkan nomor lot ganjil (Rak B - Slow Moving) dan genap (Rak A - Fast Moving).
+5. **Verifikasi Digit Barcode** - Validasi checksum dengan kalkulasi total digit kode resi/barcode.
 
-This project is a starting point for a Flutter application.
+## Teknologi
+- **Framework:** Flutter (Dart)
+- **Platform Target:** Android / iOS / Web / Desktop
 
-A few resources to get you started if this is your first Flutter project:
+## Memulai (Getting Started)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Pastikan Flutter SDK telah terinstal di perangkat Anda.
+2. Unduh dependensi proyek:
+   ```bash
+   flutter pub get
+   ```
+3. Jalankan aplikasi:
+   ```bash
+   flutter run
+   ```
