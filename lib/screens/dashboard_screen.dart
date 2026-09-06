@@ -6,111 +6,206 @@ import 'kalkulator_screen.dart';
 import 'sortir_zonasi_screen.dart';
 import 'verifikasi_digit_screen.dart';
 
-// Halaman Dashboard: menu utama setelah login berhasil.
-// Pakai Drawer (menu geser dari samping) supaya gampang nambah menu baru nanti.
+// Halaman Dashboard: menu utama langsung ditampilkan berupa Grid Card di layar (tanpa burger menu drawer).
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
+
+  void _logout(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("LogiTrack - Dashboard"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: "Logout",
+            onPressed: () => _logout(context),
+          ),
+        ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Bagian atas Drawer, header dengan info aplikasi
-            const DrawerHeader(
-              decoration: BoxDecoration(color: AppTheme.warnaUtama),
-              child: Column(
+            // Banner Selamat Datang
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: AppTheme.warnaUtama,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(Icons.warehouse, color: Colors.white, size: 40),
+                  Row(
+                    children: [
+                      Icon(Icons.warehouse, color: Colors.white, size: 32),
+                      SizedBox(width: 10),
+                      Text(
+                        "LogiTrack System",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 8),
                   Text(
-                    "LogiTrack",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  Text(
-                    "Menu Staf Gudang",
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                    "Selamat datang, Staf Gudang!\nPilih menu layanan operasional di bawah ini:",
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 20),
 
-            // TODO: nanti tiap ListTile di bawah ini dihubungkan ke
-            // masing-masing halaman modul (Data Kelompok, Kalkulator, dst)
-            ListTile(
-              leading: const Icon(Icons.groups),
-              title: const Text("Data Kelompok"),
-              onTap: () {
-                Navigator.pop(context); // tutup drawer dulu
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const DataKelompokScreen()),
-                );
-              },
+            const Text(
+              "Menu Layanan Logistik",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.calculate),
-              title: const Text("Kalkulator Logistik"),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
+            const SizedBox(height: 12),
+
+            // Grid Pilihan Menu Utama langsung di Dashboard
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.1,
+              children: [
+                _buildMenuCard(
                   context,
-                  MaterialPageRoute(builder: (context) => const KalkulatorScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.warehouse),
-              title: const Text("Sortir Zonasi Rak"),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
+                  title: "Data Kelompok",
+                  subtitle: "Tim Pengembang",
+                  icon: Icons.groups,
+                  color: Colors.indigo,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DataKelompokScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildMenuCard(
                   context,
-                  MaterialPageRoute(builder: (context) => const SortirZonasiScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.qr_code),
-              title: const Text("Verifikasi Digit"),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
+                  title: "Kalkulator Logistik",
+                  subtitle: "Hitung Stok & Muatan",
+                  icon: Icons.calculate,
+                  color: Colors.teal,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KalkulatorScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildMenuCard(
                   context,
-                  MaterialPageRoute(builder: (context) => const VerifikasiDigitScreen()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text("Logout", style: TextStyle(color: Colors.red)),
-              onTap: () {
-                // Kembali ke halaman Login, dan hapus semua halaman
-                // sebelumnya dari "riwayat" supaya tidak bisa di-back lagi.
-                Navigator.pushAndRemoveUntil(
+                  title: "Sortir Zonasi Rak",
+                  subtitle: "Cek Lot Ganjil/Genap",
+                  icon: Icons.warehouse,
+                  color: Colors.orange.shade800,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SortirZonasiScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildMenuCard(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  (route) => false,
-                );
-              },
+                  title: "Verifikasi Digit",
+                  subtitle: "Checksum Barcode",
+                  icon: Icons.qr_code,
+                  color: Colors.blueGrey,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VerifikasiDigitScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
+
           ],
         ),
       ),
-      body: const Center(
-        child: Text(
-          "Selamat datang di LogiTrack!\nBuka menu di kiri atas untuk mulai.",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16),
+    );
+  }
+
+  // Helper widget untuk membuat Card Menu
+  Widget _buildMenuCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: color.withValues(alpha: 0.15),
+                child: Icon(icon, size: 28, color: color),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
