@@ -24,6 +24,9 @@ class _LoginScreenState extends State<LoginScreen> {
   // Pesan error yang ditampilkan kalau login gagal / field kosong
   String pesanError = "";
 
+  // State untuk kontrol visibilitas password (true = disembunyikan)
+  bool _obscurePassword = true;
+
   void cekLogin() {
     String idPetugas = idPetugasController.text;
     String password = passwordController.text;
@@ -94,11 +97,23 @@ class _LoginScreenState extends State<LoginScreen> {
               // Field Password
               TextField(
                 controller: passwordController,
-                obscureText: true, // biar teks password disembunyikan
-                decoration: const InputDecoration(
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
                   labelText: "Password",
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 12),
