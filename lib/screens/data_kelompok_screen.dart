@@ -26,8 +26,8 @@ class DataKelompokScreen extends StatelessWidget {
                 backgroundColor: AppTheme.warnaUtama,
                 child: Text("1", style: TextStyle(color: Colors.white)),
               ),
-              title: const Text("Anggota 1"),
-              subtitle: const Text("NIM: 23081010001"),
+              title: const Text("Justin Muhammad Rasyid"),
+              subtitle: const Text("NIM: 124240074"),
               trailing: const Text(
                 "Lead Dev",
                 style: TextStyle(
@@ -46,8 +46,8 @@ class DataKelompokScreen extends StatelessWidget {
                 backgroundColor: AppTheme.warnaUtama,
                 child: Text("2", style: TextStyle(color: Colors.white)),
               ),
-              title: const Text("Anggota 2"),
-              subtitle: const Text("NIM: 23081010002"),
+              title: const Text("Kanza Widi Bagaskara"),
+              subtitle: const Text("NIM: 124240059"),
               trailing: const Text(
                 "Core Logic 1",
                 style: TextStyle(
@@ -66,8 +66,8 @@ class DataKelompokScreen extends StatelessWidget {
                 backgroundColor: AppTheme.warnaUtama,
                 child: Text("3", style: TextStyle(color: Colors.white)),
               ),
-              title: const Text("Anggota 3"),
-              subtitle: const Text("NIM: 23081010003"),
+              title: const Text("Daniel Roby Maldini"),
+              subtitle: const Text("NIM: 124240044"),
               trailing: const Text(
                 "Core Logic 2",
                 style: TextStyle(
@@ -86,8 +86,8 @@ class DataKelompokScreen extends StatelessWidget {
                 backgroundColor: AppTheme.warnaUtama,
                 child: Text("4", style: TextStyle(color: Colors.white)),
               ),
-              title: const Text("Anggota 4"),
-              subtitle: const Text("NIM: 23081010004"),
+              title: const Text("Ahmad Iqbal Kholid"),
+              subtitle: const Text("NIM: 124240029"),
               trailing: const Text(
                 "UI/UX",
                 style: TextStyle(
