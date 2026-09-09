@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-// Halaman Kalkulator Logistik: estimasi kuantitas stok & muatan kontainer.
-// + = stok masuk, - = stok keluar, x = kapasitas box, / = distribusi armada.
-
+/// Kalkulator operasi logistik: stok masuk (+), stok keluar (−),
+/// kapasitas box (×), dan distribusi armada (÷).
+///
+/// Mendukung input format Indonesia (titik ribuan, koma desimal)
+/// dan format internasional (titik desimal).
 class KalkulatorScreen extends StatefulWidget {
   const KalkulatorScreen({super.key});
 
@@ -15,11 +17,7 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
   final angkaAController = TextEditingController();
   final angkaBController = TextEditingController();
 
-  // Variabel simpel (String) buat nyimpen operasi mana yang lagi dipilih.
-  // Sesuai gaya beginner-friendly: tidak pakai enum.
   String operasiTerpilih = "+";
-
-  // Teks hasil yang ditampilkan ke layar
   String hasilText = "";
 
   void pilihOperasi(String operasi) {
@@ -28,75 +26,54 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
     });
   }
 
-  // Helper: normalisasi input angka user supaya bisa di-parse.
-  // Mendukung format Indonesia (koma = desimal, titik = ribuan)
-  // dan juga format internasional (titik = desimal).
-  //
-  // Contoh input yang didukung:
-  //   "1.000.000"    -> "1000000"       (titik sebagai pemisah ribuan)
-  //   "1.500,75"     -> "1500.75"       (titik ribuan + koma desimal)
-  //   "2,5"          -> "2.5"           (koma sebagai desimal)
-  //   "1000000"      -> "1000000"       (angka polos jutaan)
-  //   "3.14"         -> "3.14"          (titik sebagai desimal, format internasional)
+  /// Normalisasi input angka agar kompatibel dengan [double.tryParse].
+  ///
+  /// Mendukung format:
+  /// - ID: "1.500,75" → "1500.75" | "2,5" → "2.5"
+  /// - EN: "3.14" → "3.14"
+  /// - Ribuan: "1.000.000" → "1000000"
   String normalisasiAngka(String input) {
     String teks = input.trim();
 
-    // Kalau ada koma, berarti user pakai format Indonesia:
-    // koma = desimal, titik = pemisah ribuan
     if (teks.contains(',')) {
-      teks = teks.replaceAll('.', ''); // hapus titik ribuan
-      teks = teks.replaceAll(',', '.'); // ganti koma jadi titik desimal
+      // Format ID: koma = desimal, titik = ribuan
+      teks = teks.replaceAll('.', '');
+      teks = teks.replaceAll(',', '.');
     } else {
-      // Tidak ada koma. Cek apakah titik dipakai sebagai pemisah ribuan
-      // atau sebagai desimal. Caranya: kalau ada lebih dari 1 titik,
-      // pasti itu pemisah ribuan (contoh: "1.000.000").
-      // Kalau cuma 1 titik dan posisinya bukan 3 digit dari belakang,
-      // itu desimal (contoh: "3.14"). Kalau posisinya pas 3 digit dari
-      // belakang, kita anggap ribuan (contoh: "1.000" = seribu).
       int jumlahTitik = '.'.allMatches(teks).length;
 
       if (jumlahTitik > 1) {
-        // Lebih dari 1 titik -> pasti pemisah ribuan, hapus semua
+        // Multiple dots → thousands separator
         teks = teks.replaceAll('.', '');
       } else if (jumlahTitik == 1) {
-        // 1 titik saja. Cek posisi: kalau tepat 3 digit setelah titik
-        // dan total digit > 3, kemungkinan besar itu pemisah ribuan.
         int posisiTitik = teks.indexOf('.');
         String setelahTitik = teks.substring(posisiTitik + 1);
         if (setelahTitik.length == 3 && posisiTitik > 0) {
-          // Kemungkinan ribuan (misal "1.000"), hapus titik
+          // Pattern "X.000" → kemungkinan ribuan
           teks = teks.replaceAll('.', '');
         }
-        // Selain itu, biarkan titik sebagai desimal (misal "3.14")
       }
     }
 
     return teks;
   }
 
-  // Helper: format angka hasil supaya mudah dibaca.
-  // Tampilkan dengan pemisah ribuan (titik) dan desimal (koma) gaya Indonesia.
-  // Contoh: 1500000.5 -> "1.500.000,5"
-  //         250.0     -> "250"  (hilangkan ,0 yang tidak perlu)
+  /// Format angka ke notasi Indonesia (titik ribuan, koma desimal).
+  ///
+  /// Contoh: 1500000.5 → "1.500.000,5" | 250.0 → "250"
   String formatHasil(double angka) {
-    // Cek apakah hasilnya bilangan bulat (tidak ada bagian desimal)
     bool isBulat = (angka == angka.roundToDouble()) && !angka.isInfinite && !angka.isNaN;
 
     String teks;
     if (isBulat) {
-      // Tampilkan tanpa desimal: 1500000 bukan 1500000.0
       teks = angka.toInt().toString();
     } else {
-      // Tampilkan dengan desimal, maksimal 4 angka di belakang koma
-      // lalu hapus nol trailing yang tidak perlu
       teks = angka.toStringAsFixed(4);
-      // Hapus trailing zeros: "1.5000" -> "1.5"
       teks = teks.replaceAll(RegExp(r'0+$'), '');
-      // Hapus trailing dot kalau desimalnya habis: "1." -> "1"
       teks = teks.replaceAll(RegExp(r'\.$'), '');
     }
 
-    // Pisahkan bagian integer dan desimal
+    // Split integer dan desimal
     String bagianInteger;
     String bagianDesimal = '';
     if (teks.contains('.')) {
@@ -107,18 +84,16 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
       bagianInteger = teks;
     }
 
-    // Tambahkan titik sebagai pemisah ribuan pada bagian integer
-    // Contoh: "1500000" -> "1.500.000"
+    // Tambahkan pemisah ribuan pada bagian integer
     String hasilInteger = '';
     bool isNegatif = bagianInteger.startsWith('-');
     if (isNegatif) {
-      bagianInteger = bagianInteger.substring(1); // hilangkan tanda minus sementara
+      bagianInteger = bagianInteger.substring(1);
     }
     int panjang = bagianInteger.length;
     for (int i = 0; i < panjang; i++) {
       hasilInteger = hasilInteger + bagianInteger[i];
       int sisaDigit = panjang - i - 1;
-      // Tambah titik setiap 3 digit dari belakang (kecuali di akhir)
       if (sisaDigit > 0 && sisaDigit % 3 == 0) {
         hasilInteger = '$hasilInteger.';
       }
@@ -128,7 +103,6 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
       hasilInteger = '-$hasilInteger';
     }
 
-    // Gabungkan kembali. Pakai koma untuk desimal (gaya Indonesia).
     if (bagianDesimal.isNotEmpty) {
       return '$hasilInteger,$bagianDesimal';
     } else {
@@ -136,8 +110,8 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
     }
   }
 
+  /// Eksekusi kalkulasi berdasarkan operasi yang dipilih.
   void hitung() {
-    // Validasi manual: cek kosong dulu sebelum diproses
     if (angkaAController.text.isEmpty || angkaBController.text.isEmpty) {
       setState(() {
         hasilText = "Isi kedua angka dulu!";
@@ -145,11 +119,9 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
       return;
     }
 
-    // Normalisasi input supaya bisa di-parse (dukung koma, titik ribuan, dll.)
     String teksA = normalisasiAngka(angkaAController.text);
     String teksB = normalisasiAngka(angkaBController.text);
 
-    // Pakai tryParse supaya tidak crash kalau input aneh
     double? angkaA = double.tryParse(teksA);
     double? angkaB = double.tryParse(teksB);
 
@@ -179,7 +151,6 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
         hasilText = "Total kapasitas: ${formatHasil(hasil)} unit";
       });
     } else if (operasiTerpilih == "/") {
-      // Penanganan pembagian nol (syarat wajib di plan.md)
       if (angkaB == 0) {
         setState(() {
           hasilText = "Tidak bisa dibagi nol!";
@@ -193,9 +164,7 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
     }
   }
 
-  // Widget kecil buat 1 tombol operasi, dipakai berulang di bawah.
-  // (Ini bukan class terpisah, cuma function biasa yang mengembalikan Widget,
-  // supaya tidak melanggar aturan "hindari custom StatelessWidget kecil".)
+  /// Tombol operasi dengan highlight state aktif.
   Widget tombolOperasi(String operasi, String label) {
     bool sedangDipilih = operasiTerpilih == operasi;
     return ElevatedButton(
@@ -218,7 +187,7 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Input Angka A — keyboard desimal supaya ada tombol koma/titik
+            // Input A
             TextField(
               controller: angkaAController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -230,7 +199,7 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
             ),
             const SizedBox(height: 12),
 
-            // Input Angka B
+            // Input B
             TextField(
               controller: angkaBController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -242,7 +211,7 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
             ),
             const SizedBox(height: 16),
 
-            // 4 tombol operasi berjejer
+            // Operator selector
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -254,7 +223,7 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Tombol Hitung
+            // Submit
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -264,7 +233,7 @@ class _KalkulatorScreenState extends State<KalkulatorScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Hasil
+            // Output container
             if (hasilText.isNotEmpty)
               Container(
                 width: double.infinity,

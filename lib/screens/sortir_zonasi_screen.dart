@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-// Halaman Sortir Zonasi: alokasi jalur rak berdasarkan nomor lot/batch.
-// Genap -> Zona A / Rak Genap (Fast-Moving)
-// Ganjil -> Zona B / Rak Ganjil (Slow-Moving)
-
+/// Sortir zonasi rak gudang berdasarkan nomor lot/batch.
+///
+/// Aturan alokasi:
+/// - Genap → Zona A / Fast-Moving
+/// - Ganjil → Zona B / Slow-Moving
 class SortirZonasiScreen extends StatefulWidget {
   const SortirZonasiScreen({super.key});
 
@@ -15,11 +16,12 @@ class SortirZonasiScreen extends StatefulWidget {
 class _SortirZonasiScreenState extends State<SortirZonasiScreen> {
   final nomorLotController = TextEditingController();
 
-  // Nilai-nilai ini yang dipakai buat nampilin badge hasil
   bool sudahDicek = false;
   bool hasilGenap = false;
   String nomorLotDicek = "";
 
+  /// Validasi dan tentukan zonasi berdasarkan parity nomor lot.
+  /// Input dinormalisasi untuk mendukung separator ribuan (titik/koma).
   void cekZonasi() {
     if (nomorLotController.text.isEmpty) {
       setState(() {
@@ -28,20 +30,17 @@ class _SortirZonasiScreenState extends State<SortirZonasiScreen> {
       return;
     }
 
-    // Normalisasi: hapus titik dan koma yang dipakai sebagai pemisah ribuan
-    // Contoh: "1.000.000" -> "1000000", "1,000,000" -> "1000000"
+    // Strip thousands separators
     String teksNormalisasi = nomorLotController.text.trim();
     teksNormalisasi = teksNormalisasi.replaceAll('.', '');
     teksNormalisasi = teksNormalisasi.replaceAll(',', '');
 
-    // Pakai tryParse supaya tidak crash kalau input bukan angka
     int? nomorLot = int.tryParse(teksNormalisasi);
 
     if (nomorLot == null) {
       setState(() {
         sudahDicek = false;
       });
-      // Tampilkan pesan error via SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Nomor lot harus berupa angka!"),
@@ -54,7 +53,6 @@ class _SortirZonasiScreenState extends State<SortirZonasiScreen> {
     setState(() {
       sudahDicek = true;
       nomorLotDicek = nomorLotController.text;
-      // % artinya sisa bagi. Kalau sisa bagi 2 == 0, berarti genap.
       hasilGenap = (nomorLot % 2 == 0);
     });
   }
@@ -95,13 +93,12 @@ class _SortirZonasiScreenState extends State<SortirZonasiScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Badge hasil, cuma muncul kalau sudah pernah dicek
+            // Zona badge — ditampilkan setelah pengecekan
             if (sudahDicek)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  // Genap = warna aksen (amber/orange), Ganjil = slate biru tua
                   color: hasilGenap ? AppTheme.warnaAksen : AppTheme.warnaUtama,
                   borderRadius: BorderRadius.circular(12),
                 ),

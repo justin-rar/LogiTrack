@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
 
-// File ini isinya cuma "warna-warna" yang mau kita pakai di seluruh aplikasi.
-// Tujuannya: kalau nanti mau ganti warna, cukup ubah di SATU tempat ini saja,
-// tidak perlu cari-cari di banyak file screen.
-
+/// Konfigurasi tema visual terpusat untuk seluruh aplikasi LogiTrack.
+/// Semua perubahan warna dan styling cukup dilakukan di file ini.
 class AppTheme {
-  // Warna utama tema logistik: Slate Blue / Dark Teal
-  static const Color warnaUtama = Color(0xFF1E3A5F); // Slate Blue tua
-  static const Color warnaUtamaGelap = Color(0xFF0F2A44); // lebih gelap, buat AppBar
+  // Primary palette
+  static const Color warnaUtama = Color(0xFF1E3A5F);
+  static const Color warnaUtamaGelap = Color(0xFF0F2A44);
 
-  // Warna aksen: Amber/Orange (khas industri/gudang)
-  static const Color warnaAksen = Color(0xFFFFA726); // Amber/Orange
+  // Accent
+  static const Color warnaAksen = Color(0xFFFFA726);
 
-  // Warna latar belakang halaman
-  static const Color warnaBackground = Color(0xFFF5F5F5); // abu sangat terang
-
-  // Warna teks
+  // Background & text
+  static const Color warnaBackground = Color(0xFFF5F5F5);
   static const Color warnaTeksGelap = Color(0xFF212121);
   static const Color warnaTeksTerang = Colors.white;
 
-  // Ini "paket tema" lengkap yang nanti dipakai di main.dart
+  /// ThemeData global yang di-inject melalui MaterialApp.
   static ThemeData get themeData {
     return ThemeData(
       scaffoldBackgroundColor: warnaBackground,

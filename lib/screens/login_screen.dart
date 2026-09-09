@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'dashboard_screen.dart';
 
-// Halaman Login: tempat Staf Gudang memasukkan ID Petugas & Password.
-// Ini StatefulWidget karena isinya (teks yang diketik user) bisa berubah-ubah.
-
+/// Halaman autentikasi staf gudang.
+/// Menggunakan kredensial hardcoded (tanpa integrasi backend).
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -13,25 +12,23 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // Controller ini "pegang" nilai yang diketik user di TextField
   final idPetugasController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // Ini tempat kredensial hardcoded sesuai keputusan di plan.md (§6, tanpa backend)
+  // Kredensial statis — akan diganti dengan API auth di fase berikutnya
   final String idPetugasBenar = "LOG001";
   final String passwordBenar = "gudang2024";
 
-  // Pesan error yang ditampilkan kalau login gagal / field kosong
   String pesanError = "";
-
-  // State untuk kontrol visibilitas password (true = disembunyikan)
   bool _obscurePassword = true;
 
+  /// Validasi input dan cocokkan dengan kredensial.
+  /// Jika berhasil, navigasi ke Dashboard dengan pushReplacement
+  /// agar user tidak bisa kembali ke halaman login via tombol back.
   void cekLogin() {
     String idPetugas = idPetugasController.text;
     String password = passwordController.text;
 
-    // Validasi manual sederhana pakai if (sesuai gaya kode di plan.md §5)
     if (idPetugas.isEmpty || password.isEmpty) {
       setState(() {
         pesanError = "ID Petugas dan Password harus diisi!";
@@ -40,9 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     if (idPetugas == idPetugasBenar && password == passwordBenar) {
-      // Login berhasil -> pindah ke Dashboard
-      // Navigator.pushReplacement dipakai (bukan push) supaya user tidak bisa
-      // pencet tombol "back" balik ke halaman Login setelah berhasil masuk.
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const DashboardScreen()),
@@ -63,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Branding header
               const Icon(
                 Icons.warehouse,
                 size: 80,
@@ -83,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 32),
 
-              // Field ID Petugas
+              // Input ID Petugas
               TextField(
                 controller: idPetugasController,
                 decoration: const InputDecoration(
@@ -94,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Field Password
+              // Input Password dengan toggle visibility
               TextField(
                 controller: passwordController,
                 obscureText: _obscurePassword,
@@ -118,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Pesan error, cuma muncul kalau ada isinya
+              // Error message (conditional render)
               if (pesanError.isNotEmpty)
                 Text(
                   pesanError,
@@ -126,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               const SizedBox(height: 20),
 
-              // Tombol Login, lebar penuh
+              // Submit button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

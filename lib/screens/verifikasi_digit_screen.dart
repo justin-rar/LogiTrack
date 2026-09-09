@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-// Halaman Verifikasi Digit: checksum validation digit kode resi/barcode.
-// Cara kerja: jumlahkan tiap digit dalam satu kode. Contoh: "123" -> 1+2+3=6
-
+/// Verifikasi checksum digit untuk kode batch/barcode.
+///
+/// Algoritma: menjumlahkan setiap digit secara individual.
+/// Contoh: "4591" → 4 + 5 + 9 + 1 = 19
 class VerifikasiDigitScreen extends StatefulWidget {
   const VerifikasiDigitScreen({super.key});
 
@@ -17,10 +18,11 @@ class _VerifikasiDigitScreenState extends State<VerifikasiDigitScreen> {
   String hasilText = "";
   String rincianText = "";
 
+  /// Iterasi setiap karakter dalam kode, validasi sebagai digit,
+  /// lalu akumulasikan totalnya sebagai checksum.
   void hitungChecksum() {
     String kode = kodeBarcodeController.text;
 
-    // Validasi: cek kosong
     if (kode.isEmpty) {
       setState(() {
         hasilText = "Masukkan kode barcode dulu!";
@@ -30,14 +32,12 @@ class _VerifikasiDigitScreenState extends State<VerifikasiDigitScreen> {
     }
 
     int totalDigit = 0;
-    String rincian = ""; // buat nampilin "4+5+9+1" ke layar
+    String rincian = "";
 
-    // Loop untuk memisah tiap karakter dalam kode, lalu dijumlahkan
     for (int i = 0; i < kode.length; i++) {
       String karakter = kode[i];
 
-      // Validasi: kalau ada karakter yang bukan angka (misal huruf), lewati
-      // dan kasih tau user, jangan sampai aplikasi crash.
+      // Reject non-numeric characters
       if (int.tryParse(karakter) == null) {
         setState(() {
           hasilText = "Kode harus berupa angka saja!";
@@ -49,7 +49,7 @@ class _VerifikasiDigitScreenState extends State<VerifikasiDigitScreen> {
       int angka = int.parse(karakter);
       totalDigit = totalDigit + angka;
 
-      // Susun teks rincian, misal "4 + 5 + 9 + 1"
+      // Build breakdown string: "4 + 5 + 9 + 1"
       if (i == 0) {
         rincian = "$angka";
       } else {
@@ -99,6 +99,7 @@ class _VerifikasiDigitScreenState extends State<VerifikasiDigitScreen> {
             ),
             const SizedBox(height: 24),
 
+            // Output panel
             if (hasilText.isNotEmpty)
               Container(
                 width: double.infinity,

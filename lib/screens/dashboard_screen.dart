@@ -28,7 +28,7 @@ class DashboardScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: "Logout",
-            onPressed: () => _logout(context),
+            onPressed: () => _logout(context),  
           ),
         ],
       ),
