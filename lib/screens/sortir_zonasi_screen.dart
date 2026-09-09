@@ -28,7 +28,28 @@ class _SortirZonasiScreenState extends State<SortirZonasiScreen> {
       return;
     }
 
-    int nomorLot = int.parse(nomorLotController.text);
+    // Normalisasi: hapus titik dan koma yang dipakai sebagai pemisah ribuan
+    // Contoh: "1.000.000" -> "1000000", "1,000,000" -> "1000000"
+    String teksNormalisasi = nomorLotController.text.trim();
+    teksNormalisasi = teksNormalisasi.replaceAll('.', '');
+    teksNormalisasi = teksNormalisasi.replaceAll(',', '');
+
+    // Pakai tryParse supaya tidak crash kalau input bukan angka
+    int? nomorLot = int.tryParse(teksNormalisasi);
+
+    if (nomorLot == null) {
+      setState(() {
+        sudahDicek = false;
+      });
+      // Tampilkan pesan error via SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Nomor lot harus berupa angka!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     setState(() {
       sudahDicek = true;
